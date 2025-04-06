@@ -27,10 +27,12 @@
             --text-color: #212529;
             --card-bg: white;
             --input-bg: #f8fafc;
-            --sidebar-bg: linear-gradient(to bottom, var(--darker), #1a1a2e);
             --chat-bg: #f8f9fa;
             --chat-pattern: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
             --border-color: rgba(0, 0, 0, 0.05);
+            --sidebar-bg: linear-gradient(to bottom, var(--darker), #1a1a2e);
+            --history-item-bg: rgba(255, 255, 255, 0.05);
+            --typing-indicator-bg: white;
         }
         
         /* Dark mode colors */
@@ -39,10 +41,12 @@
             --text-color: #e0e0e0;
             --card-bg: #1e1e1e;
             --input-bg: #2d2d2d;
-            --sidebar-bg: linear-gradient(to bottom, #0f0f1a, #12121e);
             --chat-bg: #1a1a1a;
-            --chat-pattern: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
-            --border-color: rgba(255, 255, 255, 0.1);
+            --chat-pattern: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --sidebar-bg: linear-gradient(to bottom, #0f0f1a, #12121e);
+            --history-item-bg: rgba(255, 255, 255, 0.08);
+            --typing-indicator-bg: #2d2d2d;
         }
         
         * {
@@ -85,7 +89,6 @@
             flex-direction: column;
             transition: var(--transition);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
         }
         
         .sidebar-header {
@@ -160,7 +163,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             transition: var(--transition);
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--history-item-bg);
             border-left: 3px solid transparent;
             display: flex;
             justify-content: space-between;
@@ -209,7 +212,6 @@
             display: flex;
             flex-direction: column;
             background: var(--chat-bg);
-            position: relative;
         }
         
         header {
@@ -219,13 +221,23 @@
             text-align: center;
             position: relative;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
         }
         
         header h1 {
             font-size: 1.5rem;
             font-weight: 600;
             letter-spacing: 0.5px;
+            margin-right: 15px;
         }
         
         header h1 i {
@@ -233,10 +245,8 @@
         }
         
         .header-controls {
-            position: absolute;
-            top: 15px;
-            right: 15px;
             display: flex;
+            align-items: center;
             gap: 10px;
         }
         
@@ -246,17 +256,17 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            color: white;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            cursor: pointer;
             transition: var(--transition);
         }
         
         .theme-toggle:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-1px);
+            transform: scale(1.05);
         }
         
         .developer-info {
@@ -268,7 +278,7 @@
             transition: var(--transition);
             display: flex;
             align-items: center;
-            height: 36px;
+            position: relative;
         }
         
         .developer-info:hover {
@@ -284,17 +294,22 @@
         .contact-details {
             display: none;
             position: absolute;
-            top: 60px;
+            top: 50px;
             right: 0;
             background: var(--card-bg);
             padding: 18px;
             border-radius: 12px;
             box-shadow: var(--shadow);
             width: 260px;
-            z-index: 20;
+            z-index: 100;
             color: var(--text-color);
             text-align: left;
             animation: fadeIn 0.3s ease-out;
+            border: 1px solid var(--border-color);
+        }
+        
+        .contact-details.show {
+            display: block;
         }
         
         .contact-details h3 {
@@ -414,7 +429,7 @@
             display: flex;
             align-self: flex-start;
             padding: 12px 18px;
-            background-color: var(--card-bg);
+            background-color: var(--typing-indicator-bg);
             border-radius: 18px;
             margin-bottom: 15px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -461,7 +476,7 @@
             font-size: 0.95rem;
             transition: var(--transition);
             background: var(--input-bg);
-            padding-right: 90px;
+            padding-right: 50px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             color: var(--text-color);
         }
@@ -498,16 +513,11 @@
             margin-right: 8px;
         }
         
-        .input-icons {
+        .send-icon {
             position: absolute;
             right: 35px;
             top: 50%;
             transform: translateY(-50%);
-            display: flex;
-            gap: 10px;
-        }
-        
-        .send-icon, .voice-icon {
             color: var(--primary);
             cursor: pointer;
             background: none;
@@ -515,29 +525,41 @@
             font-size: 1.2rem;
             opacity: 0.7;
             transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
         }
         
-        .send-icon:hover, .voice-icon:hover {
+        .send-icon:hover {
             opacity: 1;
-            background: rgba(67, 97, 238, 0.1);
+            color: var(--secondary);
         }
         
-        .voice-icon.active {
-            background: rgba(255, 0, 0, 0.2);
-            color: #ff4444;
+        .voice-input-btn {
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+        
+        .voice-input-btn:hover {
+            opacity: 1;
+            color: var(--secondary);
+        }
+        
+        .voice-input-btn.listening {
+            color: #ff4d4d;
             animation: pulse 1.5s infinite;
         }
         
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.1); }
+            100% { transform: translateY(-50%) scale(1); }
         }
         
         footer {
@@ -566,19 +588,6 @@
         
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.3);
-        }
-        
-        /* Dark mode scrollbar */
-        .dark-mode ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        
-        .dark-mode ::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.3);
-        }
-        
-        .dark-mode ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.4);
         }
         
         /* Responsive design */
@@ -627,11 +636,21 @@
                 width: 90%;
                 max-width: 280px;
                 right: 5px;
-                top: 60px;
+                top: 45px;
+            }
+            
+            header {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .header-content {
+                margin-bottom: 10px;
             }
             
             .header-controls {
-                gap: 8px;
+                width: 100%;
+                justify-content: center;
             }
         }
         
@@ -657,13 +676,13 @@
                 height: auto;
             }
             
-            .input-icons {
+            .send-icon, .voice-input-btn {
                 display: none;
             }
             
             header h1 {
                 font-size: 1.3rem;
-                padding-right: 60px;
+                padding-right: 0;
             }
             
             .developer-info {
@@ -701,9 +720,11 @@
         <!-- Main Content with enhanced features -->
         <div class="main-content">
             <header>
-                <h1><i class="fas fa-robot"></i> AI Chat Companion</h1>
+                <div class="header-content">
+                    <h1><i class="fas fa-robot"></i> AI Chat Companion</h1>
+                </div>
                 <div class="header-controls">
-                    <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+                    <button class="theme-toggle" id="themeToggle">
                         <i class="fas fa-moon"></i>
                     </button>
                     <div class="developer-info" id="devInfo">
@@ -730,14 +751,12 @@
             
             <div class="input-area">
                 <input type="text" id="message" placeholder="Type your message here..." autocomplete="off">
-                <div class="input-icons">
-                    <button class="voice-icon" id="voiceBtn" title="Voice Input">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <button class="send-icon" onclick="sendMessage()" title="Send Message">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
+                <button class="voice-input-btn" id="voiceInputBtn" title="Voice Input">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="send-icon" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
                 <button onclick="sendMessage()" id="sendBtn">
                     <i class="fas fa-paper-plane"></i> Send
                 </button>
@@ -749,12 +768,11 @@
         </div>
     </div>
 
+    <!-- Enhanced JavaScript with new features -->
     <script>
         // Chat history management
         let chats = [];
         let currentChatId = null;
-        let isListening = false;
-        let recognition = null;
         
         // Initialize with a default chat
         function initChat() {
@@ -769,87 +787,6 @@
             currentChatId = chatId;
             renderChatHistory();
             renderCurrentChat();
-        }
-        
-        // Initialize voice recognition
-        function initVoiceRecognition() {
-            try {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SpeechRecognition) {
-                    console.warn('Speech recognition not supported');
-                    return;
-                }
-                
-                recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.interimResults = false;
-                recognition.lang = 'en-US';
-                
-                recognition.onstart = () => {
-                    isListening = true;
-                    document.getElementById('voiceBtn').classList.add('active');
-                };
-                
-                recognition.onend = () => {
-                    isListening = false;
-                    document.getElementById('voiceBtn').classList.remove('active');
-                };
-                
-                recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    document.getElementById('message').value = transcript;
-                };
-                
-                recognition.onerror = (event) => {
-                    console.error('Speech recognition error', event.error);
-                    isListening = false;
-                    document.getElementById('voiceBtn').classList.remove('active');
-                    addMessageToCurrentChat('bot', "Sorry, I couldn't understand your voice. Please try typing instead.");
-                    renderCurrentChat();
-                };
-                
-            } catch (error) {
-                console.error('Error initializing voice recognition:', error);
-            }
-        }
-        
-        // Toggle voice input
-        function toggleVoiceInput() {
-            if (!recognition) {
-                initVoiceRecognition();
-                if (!recognition) {
-                    addMessageToCurrentChat('bot', "Voice input is not supported in your browser. Please use a modern browser like Chrome or Edge.");
-                    renderCurrentChat();
-                    return;
-                }
-            }
-            
-            if (isListening) {
-                recognition.stop();
-            } else {
-                try {
-                    recognition.start();
-                } catch (error) {
-                    console.error('Error starting recognition:', error);
-                }
-            }
-        }
-        
-        // Toggle dark mode
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDark);
-            document.getElementById('themeToggle').innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        }
-        
-        // Check for saved dark mode preference
-        function checkDarkModePreference() {
-            const darkMode = localStorage.getItem('darkMode') === 'true';
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
-                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
-            }
         }
         
         // Render chat history sidebar
@@ -985,41 +922,99 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initChat();
-            checkDarkModePreference();
             
             // New chat button
             document.getElementById('newChatBtn').addEventListener('click', createNewChat);
             
-            // Theme toggle
-            document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
-            
-            // Voice input button
-            document.getElementById('voiceBtn').addEventListener('click', toggleVoiceInput);
+            // Check for saved theme preference
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
         });
 
-        // Developer info toggle
+        // Theme toggle functionality
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                this.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                this.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Improved developer info toggle
         document.getElementById('devInfo').addEventListener('click', function(e) {
             e.stopPropagation();
             const details = document.getElementById('contactDetails');
-            details.style.display = details.style.display === 'block' ? 'none' : 'block';
+            details.classList.toggle('show');
         });
 
         document.addEventListener('click', function() {
-            document.getElementById('contactDetails').style.display = 'none';
+            document.getElementById('contactDetails').classList.remove('show');
         });
 
         document.getElementById('contactDetails').addEventListener('click', function(e) {
             e.stopPropagation();
         });
 
+        // Voice input functionality
+        const voiceInputBtn = document.getElementById('voiceInputBtn');
+        const messageInput = document.getElementById('message');
+        let recognition = null;
+        
+        // Check for browser support
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = function() {
+                voiceInputBtn.classList.add('listening');
+                messageInput.placeholder = "Listening...";
+            };
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                messageInput.value = transcript;
+                voiceInputBtn.classList.remove('listening');
+                messageInput.placeholder = "Type your message here...";
+            };
+            
+            recognition.onerror = function(event) {
+                voiceInputBtn.classList.remove('listening');
+                messageInput.placeholder = "Type your message here...";
+                console.error('Speech recognition error', event.error);
+            };
+            
+            recognition.onend = function() {
+                voiceInputBtn.classList.remove('listening');
+                messageInput.placeholder = "Type your message here...";
+            };
+            
+            voiceInputBtn.addEventListener('click', function() {
+                if (voiceInputBtn.classList.contains('listening')) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+        } else {
+            // Browser doesn't support speech recognition
+            voiceInputBtn.style.display = 'none';
+        }
+
         // Message input handling
-        document.getElementById('message').addEventListener('keypress', function(e) {
+        messageInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 sendMessage();
             }
         });
 
-        // Original send message function (unchanged)
         async function sendMessage() {
             const msgInput = document.getElementById('message');
             const msg = msgInput.value.trim();
