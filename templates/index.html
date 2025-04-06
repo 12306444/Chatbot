@@ -21,6 +21,28 @@
             --sidebar-width: 280px;
             --border-radius: 12px;
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* Light mode colors */
+            --bg-color: #f8fafc;
+            --text-color: #212529;
+            --card-bg: white;
+            --input-bg: #f8fafc;
+            --sidebar-bg: linear-gradient(to bottom, var(--darker), #1a1a2e);
+            --chat-bg: #f8f9fa;
+            --chat-pattern: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
+            --border-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Dark mode colors */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --input-bg: #2d2d2d;
+            --sidebar-bg: linear-gradient(to bottom, #0f0f1a, #12121e);
+            --chat-bg: #1a1a1a;
+            --chat-pattern: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+            --border-color: rgba(255, 255, 255, 0.1);
         }
         
         * {
@@ -31,13 +53,14 @@
         
         body {
             font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e2e8f0 100%);
+            background: var(--bg-color);
             min-height: 100vh;
-            color: var(--dark);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         .container {
@@ -45,7 +68,7 @@
             width: 100%;
             max-width: 1200px;
             height: 95vh;
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             overflow: hidden;
@@ -55,13 +78,14 @@
         /* Sidebar Styles */
         .sidebar {
             width: var(--sidebar-width);
-            background: linear-gradient(to bottom, var(--darker), #1a1a2e);
+            background: var(--sidebar-bg);
             color: white;
             padding: 25px 0;
             display: flex;
             flex-direction: column;
             transition: var(--transition);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
         
         .sidebar-header {
@@ -184,7 +208,8 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #f8fafc;
+            background: var(--chat-bg);
+            position: relative;
         }
         
         header {
@@ -194,6 +219,7 @@
             text-align: center;
             position: relative;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 5;
         }
         
         header h1 {
@@ -206,10 +232,34 @@
             margin-right: 10px;
         }
         
-        .developer-info {
+        .header-controls {
             position: absolute;
             top: 15px;
             right: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .developer-info {
             background: rgba(255, 255, 255, 0.2);
             padding: 6px 12px;
             border-radius: 20px;
@@ -218,6 +268,7 @@
             transition: var(--transition);
             display: flex;
             align-items: center;
+            height: 36px;
         }
         
         .developer-info:hover {
@@ -233,15 +284,15 @@
         .contact-details {
             display: none;
             position: absolute;
-            top: 50px;
+            top: 60px;
             right: 0;
-            background: white;
+            background: var(--card-bg);
             padding: 18px;
             border-radius: 12px;
             box-shadow: var(--shadow);
             width: 260px;
-            z-index: 10;
-            color: var(--dark);
+            z-index: 20;
+            color: var(--text-color);
             text-align: left;
             animation: fadeIn 0.3s ease-out;
         }
@@ -249,7 +300,7 @@
         .contact-details h3 {
             color: var(--primary);
             margin-bottom: 12px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 8px;
             font-size: 1.1rem;
         }
@@ -272,8 +323,8 @@
             padding: 20px;
             flex: 1;
             overflow-y: auto;
-            background-color: #f8f9fa;
-            background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
+            background-color: var(--chat-bg);
+            background-image: var(--chat-pattern);
             background-size: 20px 20px;
         }
         
@@ -363,7 +414,7 @@
             display: flex;
             align-self: flex-start;
             padding: 12px 18px;
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 18px;
             margin-bottom: 15px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -396,28 +447,29 @@
         .input-area {
             display: flex;
             padding: 20px;
-            background-color: white;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
             position: relative;
         }
         
         input[type="text"] {
             flex: 1;
             padding: 14px 20px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
             border-radius: 25px;
             outline: none;
             font-size: 0.95rem;
             transition: var(--transition);
-            background: #f8fafc;
-            padding-right: 50px;
+            background: var(--input-bg);
+            padding-right: 90px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            color: var(--text-color);
         }
         
         input[type="text"]:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-            background: white;
+            background: var(--card-bg);
         }
         
         button#sendBtn {
@@ -446,11 +498,16 @@
             margin-right: 8px;
         }
         
-        .send-icon {
+        .input-icons {
             position: absolute;
             right: 35px;
             top: 50%;
             transform: translateY(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .send-icon, .voice-icon {
             color: var(--primary);
             cursor: pointer;
             background: none;
@@ -458,11 +515,29 @@
             font-size: 1.2rem;
             opacity: 0.7;
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
         }
         
-        .send-icon:hover {
+        .send-icon:hover, .voice-icon:hover {
             opacity: 1;
-            color: var(--secondary);
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .voice-icon.active {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
         }
         
         footer {
@@ -470,8 +545,8 @@
             padding: 12px;
             font-size: 0.8rem;
             color: #64748b;
-            background-color: #f8f9fa;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background-color: var(--chat-bg);
+            border-top: 1px solid var(--border-color);
         }
         
         /* Scrollbar styling */
@@ -491,6 +566,19 @@
         
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Dark mode scrollbar */
+        .dark-mode ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .dark-mode ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.4);
         }
         
         /* Responsive design */
@@ -539,7 +627,11 @@
                 width: 90%;
                 max-width: 280px;
                 right: 5px;
-                top: 45px;
+                top: 60px;
+            }
+            
+            .header-controls {
+                gap: 8px;
             }
         }
         
@@ -565,7 +657,7 @@
                 height: auto;
             }
             
-            .send-icon {
+            .input-icons {
                 display: none;
             }
             
@@ -575,10 +667,14 @@
             }
             
             .developer-info {
-                top: 12px;
-                right: 12px;
                 padding: 5px 10px;
                 font-size: 0.7rem;
+            }
+            
+            .theme-toggle {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -602,17 +698,22 @@
             </div>
         </div>
         
-        <!-- Main Content (functionality remains exactly the same) -->
+        <!-- Main Content with enhanced features -->
         <div class="main-content">
             <header>
                 <h1><i class="fas fa-robot"></i> AI Chat Companion</h1>
-                <div class="developer-info" id="devInfo">
-                    <i class="fas fa-user"></i> Developer
-                    <div class="contact-details" id="contactDetails">
-                        <h3>Shubham Raj</h3>
-                        <p><i class="fas fa-envelope"></i> aarushjais407@gmail.com</p>
-                        <p><i class="fas fa-phone"></i> +91 9026350491</p>
-                        <p><i class="fas fa-code"></i> AI Chatbot Developer</p>
+                <div class="header-controls">
+                    <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="developer-info" id="devInfo">
+                        <i class="fas fa-user"></i> Developer
+                        <div class="contact-details" id="contactDetails">
+                            <h3>Shubham Raj</h3>
+                            <p><i class="fas fa-envelope"></i> aarushjais407@gmail.com</p>
+                            <p><i class="fas fa-phone"></i> +91 9026350491</p>
+                            <p><i class="fas fa-code"></i> AI Chatbot Developer</p>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -629,9 +730,14 @@
             
             <div class="input-area">
                 <input type="text" id="message" placeholder="Type your message here..." autocomplete="off">
-                <button class="send-icon" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+                <div class="input-icons">
+                    <button class="voice-icon" id="voiceBtn" title="Voice Input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="send-icon" onclick="sendMessage()" title="Send Message">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
                 <button onclick="sendMessage()" id="sendBtn">
                     <i class="fas fa-paper-plane"></i> Send
                 </button>
@@ -643,11 +749,12 @@
         </div>
     </div>
 
-    <!-- Original JavaScript with added formatting improvements -->
     <script>
         // Chat history management
         let chats = [];
         let currentChatId = null;
+        let isListening = false;
+        let recognition = null;
         
         // Initialize with a default chat
         function initChat() {
@@ -662,6 +769,87 @@
             currentChatId = chatId;
             renderChatHistory();
             renderCurrentChat();
+        }
+        
+        // Initialize voice recognition
+        function initVoiceRecognition() {
+            try {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    console.warn('Speech recognition not supported');
+                    return;
+                }
+                
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = () => {
+                    isListening = true;
+                    document.getElementById('voiceBtn').classList.add('active');
+                };
+                
+                recognition.onend = () => {
+                    isListening = false;
+                    document.getElementById('voiceBtn').classList.remove('active');
+                };
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('message').value = transcript;
+                };
+                
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error', event.error);
+                    isListening = false;
+                    document.getElementById('voiceBtn').classList.remove('active');
+                    addMessageToCurrentChat('bot', "Sorry, I couldn't understand your voice. Please try typing instead.");
+                    renderCurrentChat();
+                };
+                
+            } catch (error) {
+                console.error('Error initializing voice recognition:', error);
+            }
+        }
+        
+        // Toggle voice input
+        function toggleVoiceInput() {
+            if (!recognition) {
+                initVoiceRecognition();
+                if (!recognition) {
+                    addMessageToCurrentChat('bot', "Voice input is not supported in your browser. Please use a modern browser like Chrome or Edge.");
+                    renderCurrentChat();
+                    return;
+                }
+            }
+            
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (error) {
+                    console.error('Error starting recognition:', error);
+                }
+            }
+        }
+        
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            document.getElementById('themeToggle').innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        }
+        
+        // Check for saved dark mode preference
+        function checkDarkModePreference() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
         }
         
         // Render chat history sidebar
@@ -797,12 +985,19 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initChat();
+            checkDarkModePreference();
             
             // New chat button
             document.getElementById('newChatBtn').addEventListener('click', createNewChat);
+            
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
+            
+            // Voice input button
+            document.getElementById('voiceBtn').addEventListener('click', toggleVoiceInput);
         });
 
-        // Original functionality (unchanged)
+        // Developer info toggle
         document.getElementById('devInfo').addEventListener('click', function(e) {
             e.stopPropagation();
             const details = document.getElementById('contactDetails');
@@ -817,12 +1012,14 @@
             e.stopPropagation();
         });
 
+        // Message input handling
         document.getElementById('message').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 sendMessage();
             }
         });
 
+        // Original send message function (unchanged)
         async function sendMessage() {
             const msgInput = document.getElementById('message');
             const msg = msgInput.value.trim();
