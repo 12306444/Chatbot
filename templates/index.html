@@ -209,10 +209,25 @@
             font-size: 1.5rem;
             font-weight: 600;
             letter-spacing: 0.5px;
+            margin: 0 auto;
+            width: fit-content;
         }
         
         header h1 i {
             margin-right: 10px;
+        }
+        
+        .menu-toggle {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
         }
         
         .developer-info {
@@ -231,7 +246,6 @@
         
         .developer-info:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-1px);
         }
         
         .developer-info i {
@@ -253,6 +267,10 @@
             color: var(--dark);
             text-align: left;
             animation: fadeIn 0.3s ease-out;
+        }
+        
+        .contact-details.show {
+            display: block;
         }
         
         .contact-details h3 {
@@ -511,10 +529,17 @@
             }
             
             .sidebar {
-                width: 100%;
-                height: auto;
-                max-height: 200px;
-                padding: 15px 0;
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 280px;
+                height: 100vh;
+                z-index: 100;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.active {
+                left: 0;
             }
             
             .sidebar-header {
@@ -533,7 +558,7 @@
             
             .main-content {
                 width: 100%;
-                height: calc(100% - 200px);
+                height: 100vh;
             }
             
             .message {
@@ -545,12 +570,24 @@
                 height: 46px;
             }
             
-            /* Fix for developer info overflow */
+            header h1 {
+                margin: 0 auto;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .developer-info {
+                top: 15px;
+                right: 15px;
+            }
+            
             .contact-details {
                 width: 90%;
                 max-width: 280px;
-                right: 5px;
-                top: 45px;
+                right: 0;
+                top: 50px;
             }
         }
         
@@ -562,6 +599,10 @@
             .container {
                 height: 100vh;
                 border-radius: 0;
+            }
+            
+            .sidebar {
+                width: 85%;
             }
             
             .input-area {
@@ -587,8 +628,6 @@
             }
             
             .developer-info {
-                top: 12px;
-                right: 12px;
                 padding: 5px 10px;
                 font-size: 0.7rem;
             }
@@ -599,7 +638,7 @@
 <body>
     <div class="container">
         <!-- Enhanced Sidebar with full functionality -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2><i class="fas fa-comments"></i> Chat History</h2>
             </div>
@@ -617,15 +656,18 @@
         <!-- Main Content (functionality remains exactly the same) -->
         <div class="main-content">
             <header>
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <h1><i class="fas fa-robot"></i> AI Chat Companion</h1>
                 <div class="developer-info" id="devInfo">
                     <i class="fas fa-user"></i> Developer
-                    <div class="contact-details" id="contactDetails">
-                        <h3>Shubham Raj</h3>
-                        <p><i class="fas fa-envelope"></i> aarushjais407@gmail.com</p>
-                        <p><i class="fas fa-phone"></i> +91 9026350491</p>
-                        <p><i class="fas fa-code"></i> AI Chatbot Developer</p>
-                    </div>
+                </div>
+                <div class="contact-details" id="contactDetails">
+                    <h3>Shubham Raj</h3>
+                    <p><i class="fas fa-envelope"></i> aarushjais407@gmail.com</p>
+                    <p><i class="fas fa-phone"></i> +91 9026350491</p>
+                    <p><i class="fas fa-code"></i> AI Chatbot Developer</p>
                 </div>
             </header>
             
@@ -707,6 +749,10 @@
             currentChatId = chatId;
             renderChatHistory();
             renderCurrentChat();
+            // Close sidebar on mobile after selecting a chat
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
         }
         
         // Delete a chat
@@ -794,6 +840,10 @@
             currentChatId = chatId;
             renderChatHistory();
             renderCurrentChat();
+            // Close sidebar on mobile after creating new chat
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
         }
         
         // Add a message to current chat
@@ -817,21 +867,24 @@
             
             // New chat button
             document.getElementById('newChatBtn').addEventListener('click', createNewChat);
-        });
-
-        // Original functionality (unchanged)
-        document.getElementById('devInfo').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const details = document.getElementById('contactDetails');
-            details.style.display = details.style.display === 'block' ? 'none' : 'block';
-        });
-
-        document.addEventListener('click', function() {
-            document.getElementById('contactDetails').style.display = 'none';
-        });
-
-        document.getElementById('contactDetails').addEventListener('click', function(e) {
-            e.stopPropagation();
+            
+            // Menu toggle for mobile
+            document.getElementById('menuToggle').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+            
+            // Developer info toggle
+            document.getElementById('devInfo').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('contactDetails').classList.toggle('show');
+            });
+            
+            // Close contact details when clicking elsewhere
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#devInfo') && !e.target.closest('#contactDetails')) {
+                    document.getElementById('contactDetails').classList.remove('show');
+                }
+            });
         });
 
         document.getElementById('message').addEventListener('keypress', function(e) {
