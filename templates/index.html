@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="handheldfriendly" content="true">
     <title>AI Chat Companion | Developed by Shubham Raj</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -55,28 +56,35 @@
             box-sizing: border-box;
         }
         
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        
         body {
             font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg-color);
-            min-height: 100vh;
             color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 10px;
             transition: background-color 0.3s ease, color 0.3s ease;
+            position: fixed;
+            width: 100%;
         }
         
         .container {
             display: flex;
             width: 100%;
             max-width: 1200px;
-            height: 95vh;
+            height: 100vh;
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             overflow: hidden;
             transition: var(--transition);
+            position: relative;
         }
         
         /* Sidebar Styles */
@@ -87,7 +95,7 @@
             padding: 25px 0;
             display: flex;
             flex-direction: column;
-            transition: var(--transition);
+            transition: transform 0.3s ease;
             border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
         
@@ -204,6 +212,17 @@
         .delete-chat:hover {
             color: #ff6b6b;
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Sidebar toggle styles */
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-right: 15px;
         }
 
         /* Main Content Styles */
@@ -341,6 +360,7 @@
             background-color: var(--chat-bg);
             background-image: var(--chat-pattern);
             background-size: 20px 20px;
+            -webkit-overflow-scrolling: touch;
         }
         
         .chatbox {
@@ -590,40 +610,63 @@
             background: rgba(255, 255, 255, 0.3);
         }
         
+        /* Prevent body scrolling when sidebar is open */
+        body.sidebar-open {
+            overflow: hidden;
+        }
+        
         /* Responsive design */
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
-                height: 95vh;
+                height: 100vh;
+                padding: 0;
+            }
+            
+            .sidebar-toggle {
+                display: block;
             }
             
             .sidebar {
-                width: 100%;
-                height: auto;
-                max-height: 200px;
+                width: 280px;
+                height: 100%;
+                max-height: none;
                 padding: 15px 0;
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
             }
             
             .sidebar-header {
-                padding: 0 15px 15px;
+                padding: 15px;
             }
             
             .new-chat-btn {
                 width: calc(100% - 30px);
-                margin: 0 15px 15px;
+                margin: 15px;
                 padding: 12px;
             }
             
             .chat-history {
                 padding: 0 15px;
+                flex: 1;
+                overflow-y: auto;
             }
             
             .main-content {
                 width: 100%;
+                height: 100vh;
             }
             
             .message {
-                max-width: 90%;
+                max-width: 85%;
             }
             
             button#sendBtn {
@@ -631,38 +674,43 @@
                 height: 46px;
             }
             
-            /* Fix for developer info overflow */
-            .contact-details {
-                width: 90%;
-                max-width: 280px;
-                right: 5px;
-                top: 45px;
+            /* Chat container adjustments */
+            .chat-container {
+                height: calc(100vh - 180px);
+                padding: 15px;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             }
             
+            /* Header adjustments */
             header {
-                flex-direction: column;
                 padding: 15px;
+                flex-direction: row;
             }
             
             .header-content {
-                margin-bottom: 10px;
+                margin-bottom: 0;
+                justify-content: flex-start;
             }
             
             .header-controls {
-                width: 100%;
-                justify-content: center;
+                margin-left: auto;
+            }
+            
+            /* Input area adjustments */
+            .input-area {
+                padding: 15px;
+            }
+            
+            /* Developer info adjustments */
+            .contact-details {
+                right: auto;
+                left: 0;
+                width: 280px;
             }
         }
         
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                height: 98vh;
-            }
-            
             .input-area {
                 padding: 15px;
                 flex-direction: column;
@@ -695,6 +743,10 @@
                 height: 32px;
                 font-size: 0.9rem;
             }
+            
+            .chat-container {
+                height: calc(100vh - 160px);
+            }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -720,6 +772,9 @@
         <!-- Main Content with enhanced features -->
         <div class="main-content">
             <header>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="header-content">
                     <h1><i class="fas fa-robot"></i> AI Chat Companion</h1>
                 </div>
@@ -821,6 +876,11 @@
             currentChatId = chatId;
             renderChatHistory();
             renderCurrentChat();
+            // Close sidebar on mobile after selecting a chat
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.remove('show');
+                document.body.classList.remove('sidebar-open');
+            }
         }
         
         // Delete a chat
@@ -902,6 +962,11 @@
             currentChatId = chatId;
             renderChatHistory();
             renderCurrentChat();
+            // Close sidebar on mobile after creating new chat
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.remove('show');
+                document.body.classList.remove('sidebar-open');
+            }
         }
         
         // Add a message to current chat
@@ -931,6 +996,46 @@
                 document.body.classList.add('dark-mode');
                 document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
             }
+            
+            // Fix for mobile scrolling
+            enableTouchScrolling();
+        });
+
+        // Sidebar toggle functionality
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('show');
+            document.body.classList.toggle('sidebar-open');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.querySelector('.sidebar');
+                const sidebarToggle = document.getElementById('sidebarToggle');
+                
+                if (!sidebar.contains(e.target) {
+                    sidebar.classList.remove('show');
+                    document.body.classList.remove('sidebar-open');
+                }
+            }
+        });
+
+        // Developer info toggle for mobile
+        document.getElementById('devInfo').addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                document.getElementById('contactDetails').classList.toggle('show');
+            }
+        });
+
+        // Close contact details when clicking outside
+        document.addEventListener('click', function(e) {
+            const contactDetails = document.getElementById('contactDetails');
+            const devInfo = document.getElementById('devInfo');
+            
+            if (!devInfo.contains(e.target) {
+                contactDetails.classList.remove('show');
+            }
         });
 
         // Theme toggle functionality
@@ -944,21 +1049,6 @@
                 localStorage.setItem('darkMode', 'disabled');
                 this.innerHTML = '<i class="fas fa-moon"></i>';
             }
-        });
-
-        // Improved developer info toggle
-        document.getElementById('devInfo').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const details = document.getElementById('contactDetails');
-            details.classList.toggle('show');
-        });
-
-        document.addEventListener('click', function() {
-            document.getElementById('contactDetails').classList.remove('show');
-        });
-
-        document.getElementById('contactDetails').addEventListener('click', function(e) {
-            e.stopPropagation();
         });
 
         // Voice input functionality
@@ -1014,6 +1104,26 @@
                 sendMessage();
             }
         });
+
+        // Fix for mobile scrolling
+        function enableTouchScrolling() {
+            const chatContainer = document.getElementById('chatContainer');
+            let startY = 0;
+            
+            chatContainer.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+            
+            chatContainer.addEventListener('touchmove', function(e) {
+                const y = e.touches[0].clientY;
+                const isAtTop = chatContainer.scrollTop === 0;
+                const isAtBottom = chatContainer.scrollHeight - chatContainer.scrollTop === chatContainer.clientHeight;
+                
+                if ((isAtTop && y > startY) || (isAtBottom && y < startY)) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
 
         async function sendMessage() {
             const msgInput = document.getElementById('message');
